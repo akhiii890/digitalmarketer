@@ -25,13 +25,25 @@ html {
 }
 
 body {
-    background-color: var(--bg-dark);
+    background-color: transparent;
     color: var(--text-main);
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.6;
     overflow-x: hidden;
     cursor: none; /* Custom cursor */
+}
+
+/* Background Canvas */
+#galaxy-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--bg-dark);
 }
 
 /* Custom Cursor */
@@ -211,13 +223,13 @@ ul {
     align-items: center;
     justify-content: center;
     position: relative;
-    background: url('assets/hero-bg.png') center/cover no-repeat;
+    background: transparent;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, rgba(10, 10, 11, 0.95), rgba(10, 10, 11, 0.7));
+    background: linear-gradient(to right, rgba(10, 10, 11, 0.4), rgba(10, 10, 11, 0.1));
     z-index: 1;
 }
 
