@@ -103,3 +103,107 @@ window.addEventListener('load', () => {
         }, 300 + (index * 150)); // stagger effect
     });
 });
+
+// Galaxy / Antigravity Background
+const canvas = document.getElementById('galaxy-canvas');
+let ctx = null;
+if (canvas) {
+    ctx = canvas.getContext('2d');
+}
+
+let width, height;
+let particles = [];
+
+function initGlobalCanvas() {
+    if (!canvas) return;
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', () => {
+    if (canvas) {
+        initGlobalCanvas();
+        initParticles();
+    }
+});
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+        this.baseX = this.x;
+        this.baseY = this.y;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Bounce off edges
+        if (this.x < 0 || this.x > width) this.speedX *= -1;
+        if (this.y < 0 || this.y > height) this.speedY *= -1;
+
+        // Antigravity (repel from mouse)
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDist = 150;
+        
+        if (distance < maxDist) {
+            const force = (maxDist - distance) / maxDist;
+            this.x -= (dx / distance) * force * 2;
+            this.y -= (dy / distance) * force * 2;
+        }
+    }
+    draw() {
+        if (!ctx) return;
+        ctx.fillStyle = 'rgba(255, 238, 0, 0.8)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function initParticles() {
+    particles = [];
+    if (!width || !height) return;
+    const numParticles = Math.min((width * height) / 10000, 120);
+    for (let i = 0; i < numParticles; i++) {
+        particles.push(new Particle());
+    }
+}
+
+function animateGalaxy() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        for (let j = i; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 120) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(255, 238, 0, ${0.15 - distance / 120 * 0.15})`;
+                ctx.lineWidth = 1;
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+    requestAnimationFrame(animateGalaxy);
+}
+
+// Initialize only if canvas exists
+if (canvas) {
+    initGlobalCanvas();
+    initParticles();
+    animateGalaxy();
+}
